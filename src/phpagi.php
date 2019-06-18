@@ -1572,6 +1572,14 @@ class AGI
     {
         $broken = array('code'=>500, 'result'=>-1, 'data'=>'');
 
+	// clear input buffer as suggested by https://sourceforge.net/p/phpagi/bugs/10/
+	// this seems to be a consistent problem when using php7
+	stream_set_blocking($this->in,0);
+	do {
+		$line = fgets($this->in);
+	} while ($line);
+	stream_set_blocking($this->in,1);
+
         // write command
         if(!@fwrite($this->out, trim($command) . "\n")) return $broken;
         fflush($this->out);
